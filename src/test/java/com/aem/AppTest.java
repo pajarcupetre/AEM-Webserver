@@ -37,7 +37,7 @@ public class AppTest
         new Thread(server).start();
 
         try {
-            Thread.sleep(20 * 6000);
+            Thread.sleep(20 * 60000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
