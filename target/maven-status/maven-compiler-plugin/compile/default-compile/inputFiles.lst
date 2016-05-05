@@ -1,5 +1,7 @@
-/Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/ClientHandler.java
 /Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/utils/ServerStatus.java
-/Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/App.java
+/Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/Client.java
+/Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/runner/WebServerApp.java
+/Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/utils/PropertyHandler.java
+/Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/utils/RequestHandler.java
 /Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/utils/Request.java
 /Users/alexandru-petrisorpajarcu/IdeaProjects/AEM-Webserver/src/main/java/com/aem/WebServer.java

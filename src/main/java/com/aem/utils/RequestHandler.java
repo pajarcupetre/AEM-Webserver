@@ -94,6 +94,7 @@ public class RequestHandler implements Runnable {
 					outStream.write(("Content-Disposition: attachment; filename=\""+filename+"\"\r\n\r\n").getBytes());
 					Files.copy(fileToSend.toPath(),outStream);
 					outStream.close();
+					outStream.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -117,6 +118,7 @@ public class RequestHandler implements Runnable {
 		try {
 			OutputStream outStream = clientSocket.getOutputStream();
 			outStream.write(("HTTP/1.1 "+ code + " "+ status +"\r\n\r\n"+responseString).getBytes());
+			outStream.flush();
 			outStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();

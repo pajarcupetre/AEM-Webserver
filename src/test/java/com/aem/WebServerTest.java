@@ -43,7 +43,7 @@ public class WebServerTest {
 			params.put("filename", "test");
 			testClient.sendRequest("GET", headers, params, "test", "/");
 			String response = testClient.receiveResponse();
-			assertEquals(response, "HTTP/1.1 500 Internal Server ErrorFile not available under server");
+			assertEquals("HTTP/1.1 500 Internal Server ErrorFile not available under server", response);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

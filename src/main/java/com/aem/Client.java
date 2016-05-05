@@ -41,6 +41,7 @@ public class Client {
 			});
 			outputStream.write("\r\n".getBytes());
 			outputStream.write(body.getBytes());
+			outputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
