@@ -1,5 +1,6 @@
 package com.aem;
 
+import com.aem.utils.RequestHandler;
 import com.aem.utils.ServerStatus;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class WebServer implements Runnable {
 				}
 				throw new RuntimeException("Couldn't accept new client");
 			}
-			this.threadPool.execute(new ClientHandler(clientSocket));
+			this.threadPool.execute(new RequestHandler(clientSocket));
 		}
 		this.threadPool.shutdown();
 		System.out.println("Server stopped");

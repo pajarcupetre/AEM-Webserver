@@ -1,8 +1,7 @@
-package com.aem;
+package com.aem.utils;
 
 import com.aem.utils.PropertyHandler;
 import com.aem.utils.Request;
-import javafx.scene.control.Separator;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,11 +12,11 @@ import java.util.Properties;
 /**
  * Created by alexandru-petrisorpajarcu on 02/05/2016.
  */
-public class ClientHandler implements Runnable {
+public class RequestHandler implements Runnable {
 	private Socket clientSocket;
 	private Properties properties;
 
-	public ClientHandler(Socket clientSocket) {
+	public RequestHandler(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 
@@ -89,7 +88,7 @@ public class ClientHandler implements Runnable {
 			File fileToSend = new File(indir + File.separator + filename);
 			if (fileToSend.exists()) {
 				try {
-					OutputStream outStream = clientSocket.getOutputStream();
+					OutputStream outStream = socket.getOutputStream();
 					outStream.write(("HTTP/1.1 200 OK \r\n").getBytes());
 					outStream.write(("Content-Type: application/octet-stream\r\n").getBytes());
 					outStream.write(("Content-Disposition: attachment; filename=\""+filename+"\"\r\n\r\n").getBytes());
@@ -123,7 +122,5 @@ public class ClientHandler implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
-
 
 }
