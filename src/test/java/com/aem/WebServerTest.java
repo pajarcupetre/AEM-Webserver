@@ -1,9 +1,7 @@
 package com.aem;
 
 import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -18,18 +16,18 @@ import static org.junit.Assert.assertTrue;
  */
 public class WebServerTest {
 
-	WebServer server;
+	static WebServer server;
 	HashMap<String, String> params = new HashMap<String, String>();
 	HashMap<String, String> headers = new HashMap<String, String>();
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUp() {
 		server = new WebServer(9000,10);
 		new Thread(server).start();
 	}
 
-	@After
-	public void tearDown() {
+	@AfterClass
+	public static void tearDown() {
 		System.out.println("Stopping Server");
 		server.stopServer();
 	}
