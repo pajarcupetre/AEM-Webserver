@@ -93,7 +93,7 @@ public class RequestHandler implements Runnable {
 					outStream.write(("Content-Type: application/octet-stream\r\n").getBytes());
 					outStream.write(("Content-Disposition: attachment; filename=\""+filename+"\"\r\n\r\n").getBytes());
 					Files.copy(fileToSend.toPath(),outStream);
-					outStream.close();
+					outStream.flush();
 					outStream.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -117,7 +117,7 @@ public class RequestHandler implements Runnable {
 	private void sendResponse(Socket clientSocket, int code, String status, String responseString) {
 		try {
 			OutputStream outStream = clientSocket.getOutputStream();
-			outStream.write(("HTTP/1.1 "+ code + " "+ status +"\r\n\r\n"+responseString).getBytes());
+			outStream.write(("HTTP/1.1 "+ code + " "+ status +"\r\n\r\n"+responseString+"\r\n").getBytes());
 			outStream.flush();
 			outStream.close();
 		} catch (IOException e) {
