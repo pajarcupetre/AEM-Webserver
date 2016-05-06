@@ -57,6 +57,7 @@ public class Client {
 			String line;
 			while ((line = br.readLine()) != null) {
 				out.append(line);
+				System.out.println(line);
 			}
 			response = out.toString();
 		} catch (IOException e) {

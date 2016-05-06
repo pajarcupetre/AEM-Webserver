@@ -111,7 +111,7 @@ public class RequestHandler implements Runnable {
 	}
 
 	private void sendBadLocationResponse(Socket clientSocket) {
-		sendResponse(clientSocket, 404, "Not Found", "Location not available\n");
+		sendResponse(clientSocket, 404, "Not Found", "Location not available\r\n");
 	}
 
 	private void sendResponse(Socket clientSocket, int code, String status, String responseString) {
