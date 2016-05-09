@@ -30,6 +30,7 @@ public class WebServer implements Runnable {
 			Socket clientSocket = null;
 			try {
 				clientSocket = this.serverSocket.accept();
+				clientSocket.setKeepAlive(true);
 			} catch (IOException e) {
 				if (!isServerRunning()) {
 					System.out.println("Server is down");

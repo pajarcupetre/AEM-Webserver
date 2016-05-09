@@ -37,31 +37,38 @@ public class RequestHandler implements Runnable {
 		while (!connectionClosed) {
 			Request request = new Request(inputReader);
 			requestHeaders = request.getHeaderFields();
-			requestParams = request.getRequestParams();
-			if (!requestHeaders.get("domain-location").equals("/")) {
-				sendBadLocationResponse(clientSocket);
-			} else {
-				switch (requestHeaders.get("http-method")) {
-					case GET:
-						handleGetRequest(requestHeaders, requestParams, clientSocket);
-						break;
-					case POST:
-						handlePostRequest(requestHeaders, requestParams, request.getBody(), clientSocket);
-						break;
-					default:
-						sendBadRequestResponse(clientSocket, "Unsupported HTPP method\r\n");
-				}
-			}
-			if (requestHeaders.containsKey("Connection")) {
-				String connectionType = requestHeaders.get("Connection");
-				if (connectionType.equals("close")) {
-					try {
-						clientSocket.getOutputStream().close();
-						connectionClosed = true;
-					} catch (IOException e) {
-						e.printStackTrace();
+			if (requestHeaders.size() > 0) {
+				requestParams = request.getRequestParams();
+				if (!requestHeaders.get("domain-location").equals("/")) {
+					sendBadLocationResponse(clientSocket);
+				} else {
+					switch (requestHeaders.get("http-method")) {
+						case GET:
+							handleGetRequest(requestHeaders, requestParams, clientSocket, true);
+							break;
+						case HEAD:
+							handleGetRequest(requestHeaders, requestParams, clientSocket, false);
+							break;
+						case POST:
+							handlePostRequest(requestHeaders, requestParams, request.getBody(), clientSocket);
+							break;
+						default:
+							sendBadRequestResponse(clientSocket, "Unsupported HTPP method");
 					}
 				}
+				if (requestHeaders.containsKey("Connection")) {
+					String connectionType = requestHeaders.get("Connection");
+					if (connectionType.equals("close")) {
+						try {
+							clientSocket.getOutputStream().close();
+							connectionClosed = true;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} else {
+				connectionClosed = true;
 			}
 		}
 	}
@@ -106,7 +113,7 @@ public class RequestHandler implements Runnable {
 
 	}
 
-	private void handleGetRequest(Map<String, String> requestHeaders, Map<String, String> requestParams, Socket socket) {
+	private void handleGetRequest(Map<String, String> requestHeaders, Map<String, String> requestParams, Socket socket, boolean sendFile) {
 		if (requestParams.containsKey("filename")) {
 			String filename = requestParams.get("filename");
 			String indir = properties.getProperty("aem.webserver.fileUploadPath");
@@ -119,13 +126,15 @@ public class RequestHandler implements Runnable {
 					outStream.write(("Content-Type: application/octet-stream\r\n").getBytes());
 					outStream.write(("Content-Disposition: attachment; filename=\""+ filename +"\"\r\n").getBytes());
 					outStream.write(("Content-Length: " + fileToSend.length()+"\r\n\r\n").getBytes());
-					Files.copy(fileToSend.toPath(),outStream);
+					if (sendFile) {
+						Files.copy(fileToSend.toPath(),outStream);
+					}
 					outStream.flush();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			} else {
-				sendResponse(clientSocket, 500, "Internal Server Error", "File not available under server\r\n");
+				sendResponse(clientSocket, 500, "Internal Server Error", "File not available under server");
 			}
 		} else {
 			sendResponseOK(clientSocket);
@@ -137,7 +146,7 @@ public class RequestHandler implements Runnable {
 	}
 
 	private void sendBadLocationResponse(Socket clientSocket) {
-		sendResponse(clientSocket, 404, "Not Found", "Location not available\r\n");
+		sendResponse(clientSocket, 404, "Not Found", "Location not available");
 	}
 
 	private void sendResponse(Socket clientSocket, int code, String status, String responseString) {
@@ -146,7 +155,9 @@ public class RequestHandler implements Runnable {
 			outStream.write(("HTTP/1.1 "+ code + " "+ status +"\r\n").getBytes());
 			outStream.write(("Connection: "+ this.requestHeaders.get("Connection")+"\r\n").getBytes());
 			outStream.write(("Content-Length: "+responseString.getBytes().length+"\r\n\r\n").getBytes());
-			outStream.write((responseString+"\r\n").getBytes());
+			if (responseString.length()>0) {
+				outStream.write((responseString).getBytes());
+			}
 			outStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();

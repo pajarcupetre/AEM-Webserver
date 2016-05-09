@@ -23,17 +23,19 @@ public class Request {
 	public Request(BufferedReader inputStreamReader) {
 		requestParams = new HashMap<>();
 		this.headerFields = getHeaderFieldsFromContent(inputStreamReader);
-		String location = headerFields.get("domain-location");
-		if (location.contains("?")) {
-			parseRequestParams(location.substring(location.indexOf("?")+1));
-			headerFields.put("domain-location", location.substring(0, location.indexOf("?")));
-		}
-		if (headerFields.containsKey("Content-Length")) {
-			body = readBody(inputStreamReader, Integer.parseInt(headerFields.get("Content-Length")));
-		} else if (headerFields.containsKey("Transfer-Encoding") && headerFields.get("Transfer-Encoding").equals("Chunked")) {
-			body = readBodyInChuncks(inputStreamReader);
-		} else {
-			body = "";
+		if (headerFields.size() > 0) {
+			String location = headerFields.get("domain-location");
+			if (location.contains("?")) {
+				parseRequestParams(location.substring(location.indexOf("?") + 1));
+				headerFields.put("domain-location", location.substring(0, location.indexOf("?")));
+			}
+			if (headerFields.containsKey("Content-Length")) {
+				body = readBody(inputStreamReader, Integer.parseInt(headerFields.get("Content-Length")));
+			} else if (headerFields.containsKey("Transfer-Encoding") && headerFields.get("Transfer-Encoding").equals("Chunked")) {
+				body = readBodyInChuncks(inputStreamReader);
+			} else {
+				body = "";
+			}
 		}
 	}
 

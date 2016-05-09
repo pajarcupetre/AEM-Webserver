@@ -55,13 +55,16 @@ public class ContentParser {
 			String inputLine;
 			while ((inputLine = in.readLine()) != null)
 			{
-				if (inputLine.equals("")) break;
-				System.out.println(inputLine);
-				headerLines.add(inputLine);
+				if (inputLine.equals("") && headerLines.size()>0) {
+					break;
+				} else if (inputLine.equals("")){
+					continue;
+				} else {
+					headerLines.add(inputLine);
+				}
 			}
 			if (headerLines.size() > 0) {
 				String requestTypeLine = headerLines.remove(0);
-				System.out.println(requestTypeLine);
 				String[] requestTypeDetails = requestTypeLine.split(" ");
 				headerFields.put("http-method", requestTypeDetails[0]);
 				headerFields.put("domain-location", requestTypeDetails[1]);

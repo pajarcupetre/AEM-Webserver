@@ -17,13 +17,18 @@ public class Response {
 	Map<String, String> headerFields;
 	String body;
 
-	public Response(BufferedReader inputStreamReader) {
+	public Response(BufferedReader inputStreamReader, boolean shouldHaveBody) {
 		this.headerFields = getHeaderFieldsFromContent(inputStreamReader);
-		if (headerFields.containsKey("Content-Length")) {
-			body = readBody(inputStreamReader, Integer.parseInt(headerFields.get("Content-Length")));
-		} else if (headerFields.containsKey("Transfer-Encoding") && headerFields.get("Transfer-Encoding").equals("Chunked")) {
-			body = readBodyInChuncks(inputStreamReader);
-		} else {
+		if (shouldHaveBody) {
+			if (headerFields.containsKey("Content-Length")) {
+				body = readBody(inputStreamReader, Integer.parseInt(headerFields.get("Content-Length")));
+			} else if (headerFields.containsKey("Transfer-Encoding") && headerFields.get("Transfer-Encoding").equals("Chunked")) {
+				body = readBodyInChuncks(inputStreamReader);
+			} else {
+				body = "";
+			}
+		}
+		else {
 			body = "";
 		}
 	}

@@ -38,11 +38,14 @@ public class Client {
 			outputStream.write((http_method+" "+location+" HTTP/1.1\r\n").getBytes());
 			httpHeaders.keySet().forEach(key -> {
 				try {
-					outputStream.write((key + ":" + httpHeaders.get(key) + "\r\n").getBytes());
+					outputStream.write((key + ": " + httpHeaders.get(key) + "\r\n").getBytes());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			});
+			if (body.length() > 0) {
+				outputStream.write(("Content-Length: "+ body.length() +"\r\n").getBytes());
+			}
 			outputStream.write("\r\n".getBytes());
 			outputStream.write(body.getBytes());
 			outputStream.flush();
@@ -51,9 +54,9 @@ public class Client {
 		}
 	}
 
-	String receiveResponse() {
-		Response response = new Response(bufferedReader);
-		return response.getBody();
+	Response receiveResponse(boolean withBody) {
+		Response response = new Response(bufferedReader, withBody);
+		return response;
 	}
 
 }
