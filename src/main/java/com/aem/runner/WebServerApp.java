@@ -11,9 +11,16 @@ import java.util.Properties;
 public class WebServerApp {
 
 	public static void main(String[] args) {
-		Properties properties = PropertyHandler.loadProperties();
-		int threads = Integer.parseInt(properties.getProperty("aem.webserver.numberOfThreads"));
-		int port = Integer.parseInt(properties.getProperty("aem.webserver.port"));
+		int threads;
+		int port;
+		if (args.length == 2) {
+			port = Integer.parseInt(args[0]);
+			threads	= Integer.parseInt(args[1]);
+		} else {
+			Properties properties = PropertyHandler.loadProperties();
+			threads = Integer.parseInt(properties.getProperty("aem.webserver.numberOfThreads"));
+			port = Integer.parseInt(properties.getProperty("aem.webserver.port"));
+		}
 		WebServer webServer = new WebServer(port, threads);
 		new Thread(webServer).start();
 	}

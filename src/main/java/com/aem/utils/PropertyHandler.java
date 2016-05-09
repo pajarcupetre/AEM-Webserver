@@ -13,9 +13,7 @@ public class PropertyHandler {
 		Properties properties =  new Properties();
 		try {
 			//Get file from resources folder
-			ClassLoader classLoader = PropertyHandler.class.getClassLoader();
-			File file = new File(classLoader.getResource("application.properties").getFile());
-			inputStream = new FileInputStream(file);
+			inputStream = PropertyHandler.class.getClassLoader().getResourceAsStream("application.properties");
 			properties.load(inputStream);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
