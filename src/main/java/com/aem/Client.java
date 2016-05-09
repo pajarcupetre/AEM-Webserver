@@ -1,5 +1,7 @@
 package com.aem;
 
+import com.aem.utils.Response;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -12,12 +14,14 @@ public class Client {
 	InetAddress host;
 	Integer port;
 	Socket socket;
+	BufferedReader bufferedReader;
 
 	Client(InetAddress host, Integer port){
 		this.host = host;
 		this.port = port;
 		try {
 			socket = new Socket(host.getHostName(), port.intValue());
+			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -48,22 +52,8 @@ public class Client {
 	}
 
 	String receiveResponse() {
-		String response = "";
-		try {
-			InputStream inputStream = socket.getInputStream();
-			InputStreamReader isr = new InputStreamReader(inputStream);
-			BufferedReader br = new BufferedReader(isr);
-			StringBuilder out = new StringBuilder();
-			String line;
-			while ((line = br.readLine()) != null) {
-				out.append(line);
-				System.out.println(line);
-			}
-			response = out.toString();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return response;
+		Response response = new Response(bufferedReader);
+		return response.getBody();
 	}
 
 }

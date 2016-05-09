@@ -41,7 +41,7 @@ public class WebServerTest {
 			params.put("filename", "test");
 			testClient.sendRequest("GET", headers, params, "test", "/");
 			String response = testClient.receiveResponse();
-			assertEquals("HTTP/1.1 500 Internal Server ErrorFile not available under server", response);
+			assertEquals("File not available under server\r\n", response);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -54,7 +54,7 @@ public class WebServerTest {
 			params.clear();
 			testClient.sendRequest("GET", headers, params, "test", "/badLocation");
 			String response = testClient.receiveResponse();
-			assertEquals("HTTP/1.1 404 Not FoundLocation not available", response);
+			assertEquals("Location not available\r\n", response);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

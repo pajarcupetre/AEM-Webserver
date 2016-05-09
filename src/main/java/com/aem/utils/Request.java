@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.aem.utils.ContentParser.*;
+
 /**
  * Created by alexandru-petrisorpajarcu on 03/05/2016.
  */
@@ -18,69 +20,21 @@ public class Request {
 	Map<String, String> requestParams;
 	String body;
 
-	public Request(Socket socket) {
-		InputStream inputStream = null;
+	public Request(BufferedReader inputStreamReader) {
 		requestParams = new HashMap<>();
-		try {
-			inputStream = socket.getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-			this.headerFields = getHeaderFields(in);
-			if (headerFields.containsKey("Content-Length")) {
-				body = readBody(in, Integer.parseInt(headerFields.get("Content-Length")));
-			} else {
-				body = "";
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		this.headerFields = getHeaderFieldsFromContent(inputStreamReader);
+		String location = headerFields.get("domain-location");
+		if (location.contains("?")) {
+			parseRequestParams(location.substring(location.indexOf("?")+1));
+			headerFields.put("domain-location", location.substring(0, location.indexOf("?")));
 		}
-	}
-
-	private String readBody(BufferedReader in, int numberOfChars) {
-		String bodyString = "";
-		char bodyStringBuffer[] = new char[numberOfChars];
-		try {
-			in.read(bodyStringBuffer);
-			bodyString = new String(bodyStringBuffer);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (headerFields.containsKey("Content-Length")) {
+			body = readBody(inputStreamReader, Integer.parseInt(headerFields.get("Content-Length")));
+		} else if (headerFields.containsKey("Transfer-Encoding") && headerFields.get("Transfer-Encoding").equals("Chunked")) {
+			body = readBodyInChuncks(inputStreamReader);
+		} else {
+			body = "";
 		}
-		return bodyString;
-	}
-
-	private Map<String, String> getHeaderFields(BufferedReader in) {
-		Map<String, String> headerFields = new HashMap();
-		try {
-			ArrayList<String> headerLines = new ArrayList<String>();
-			String inputLine;
-			while ((inputLine = in.readLine()) != null)
-			{
-				if (inputLine.equals("")) break;
-				headerLines.add(inputLine);
-			}
-			if (headerLines.size() > 0) {
-				String requestTypeLine = headerLines.remove(0);
-				System.out.println(requestTypeLine);
-				String[] requestTypeDetails = requestTypeLine.split(" ");
-				headerFields.put("http-method", requestTypeDetails[0]);
-				String location;
-				if (requestTypeDetails[1].contains("?")) {
-					location = requestTypeDetails[1].substring(0, requestTypeDetails[1].indexOf("?"));
-					parseRequestParams(requestTypeDetails[1].substring(requestTypeDetails[1].indexOf("?")+1));
-				} else {
-					location = requestTypeDetails[1];
-				}
-				headerFields.put("domain-location", location);
-				headerFields.put("http-version", requestTypeDetails[2]);
-			}
-			headerLines.forEach(line -> {
-				String[] fieldWithValue = line.split(": ");
-				headerFields.put(fieldWithValue[0], fieldWithValue[1]);
-			});
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return headerFields;
 	}
 
 	private void parseRequestParams(String params) {
